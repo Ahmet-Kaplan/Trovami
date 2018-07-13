@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class InputField extends StatelessWidget {
-  IconData icon;
-  String hintText;
-  TextInputType textInputType;
-  Color textFieldColor, iconColor;
-  bool obscureText;
-  double bottomMargin;
-  TextStyle textStyle,hintStyle;
-  var validateFunction;
-  var onSaved;
-  Key key;
+  final IconData icon;
+  final String hintText;
+  final TextInputType textInputType;
+  final Color textFieldColor, iconColor;
+  final bool obscureText;
+  final double bottomMargin;
+  final TextStyle textStyle,hintStyle;
+  final Function validateFunction;
+  final Function onSaved;
+  final Key key;
 
   //passing props in the Constructor.
   //Java like style
@@ -52,7 +52,7 @@ class InputField extends StatelessWidget {
                   icon,
                   color: Colors.brown[150],
                 ),
-                hideDivider: true),
+                border: null),
           ),
         )));
   }

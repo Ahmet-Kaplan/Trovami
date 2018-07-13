@@ -9,20 +9,20 @@
 //  String statusMsg="Account Created Successfully";
 //  //To create new User
 //  Future<String> createUser(UserData userData) async{
-//    print(userData.EmailId);
+//    print(userData.emailId);
 //    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 //    await firebaseAuth
 //        .createUserWithEmailAndPassword(
-//        email: userData.EmailId, password: userData.password);
+//        email: userData.emailId, password: userData.password);
 //    return statusMsg;
 //  }
 //
 //  //To verify new User
 //  Future<String> verifyUser (logindetails user) async{
-//    print(user.EmailId);
+//    print(user.emailId);
 //    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 //    await firebaseAuth
-//        .signInWithEmailAndPassword(email: user.EmailId, password: user.password);
+//        .signInWithEmailAndPassword(email: user.emailId, password: user.password);
 //    return "Login Successfull";
 //  }
 //}

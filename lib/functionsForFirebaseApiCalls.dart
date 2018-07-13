@@ -1,12 +1,9 @@
 import 'dart:convert';
-
-
-
-import 'package:flutter/services.dart';
-
+import 'package:http/http.dart';
 import 'main.dart';
 
-var _httpClient = createHttpClient();
+
+var _httpClient = new Client();
 const _jsonCodec=const JsonCodec(reviver: _reviver);
 const _jsonCodec2=const JsonCodec(reviver: _reviver2);
 
@@ -20,7 +17,7 @@ _reviver( key, value) {
 
 _reviver2(key,value) {
   if(key!=null&& value is Map){
-    return new groupDetails.fromJson(value);
+    return new GroupDetails.fromJson(value);
   } else
     return value;
 }

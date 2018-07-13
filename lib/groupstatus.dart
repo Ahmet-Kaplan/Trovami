@@ -4,7 +4,7 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -18,14 +18,15 @@ import 'main.dart';
 import 'signinpage.dart';
 
 
-final userref = FirebaseDatabase.instance.reference().child('users');          // new
-final groupref = FirebaseDatabase.instance.reference().child('groups');          // new
-var httpClient = createHttpClient();
+final userref = FirebaseDatabase.instance.reference().child('users');
+final groupref = FirebaseDatabase.instance.reference().child('groups');
+var httpClient = new Client();
 const jsonCodec1=const JsonCodec(reviver: _reviver1);
 const jsonCodec=const JsonCodec(reviver: _reviver);
-List<currentLoc> currentLocations=new List<currentLoc>();
+List<CurrentLoc> currentLocations=new List<CurrentLoc>();
 bool locationShare;
 Timer t1;
+bool locationSharCurrentLoc1;
 bool mapflag;
 var temp1=[];
 var length;
@@ -42,7 +43,7 @@ _reviver(key,value) {
 _reviver1(key,value) {
 
   if(key!=null&& value is Map){
-    return new groupDetails.fromJson(value);
+    return new GroupDetails.fromJson(value);
   }
  else return value;
 }
@@ -55,7 +56,7 @@ _reviver1(key,value) {
     if(v.groupname==groupStatusGroupname) {
       for(var i=0;i<v.groupmembers.length;i++) {
         var response1 = await httpClient.get(
-            "https://fir-trovami.firebaseio.com/groups/${k}/members/${i}.json");
+            "https://fir-trovami.firebaseio.com/groups/$k/members/$i.json");
       Map result1=jsonCodec.decode(response1.body);
       if(result1["emailid"]==loggedinUser){
         if(result1["locationShare"]==true) {
@@ -66,7 +67,7 @@ _reviver1(key,value) {
         }
         String result2=jsonCodec.encode(locationShare);
         await httpClient.put(
-            "https://fir-trovami.firebaseio.com/groups/${k}/members/${i}/locationShare.json",body: result2);
+            "https://fir-trovami.firebaseio.com/groups/$k/members/$i/locationShare.json",body: result2);
 
       }
       }
@@ -78,29 +79,29 @@ _reviver1(key,value) {
 
 
 
-  class groupstatuslayout extends StatefulWidget {
+  class GroupStatusLayout extends StatefulWidget {
     @override
-    groupstatuslayoutstate createState() => new groupstatuslayoutstate();
+    GroupStatusLayoutState createState() => new GroupStatusLayoutState();
   }
 
-  class groupstatuslayoutstate extends State<groupstatuslayout>{
+  class GroupStatusLayoutState extends State<GroupStatusLayout>{
 
         @override
         Widget build(BuildContext context)=>
         new Scaffold(
         body: new Container(
-          child:new groupstatus(),
+          child:new GroupStatus(),
         ),
         );
   }
 
 
-  class groupstatus extends StatefulWidget {
+  class GroupStatus extends StatefulWidget {
     @override
-    groupstatusstate createState() => new groupstatusstate();
+    GroupStatusState createState() => new GroupStatusState();
   }
 
-class groupstatusstate extends State<groupstatus>{
+class GroupStatusState extends State<GroupStatus>{
 
   var getMemFlag=0;
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
@@ -110,7 +111,7 @@ class groupstatusstate extends State<groupstatus>{
 
   getgrpmembers(String grpkey,int i) async{
     var response1 = await httpClient. get (
-        "https://fir-trovami.firebaseio.com/groups/${grpkey}/members/${i}.json");
+        "https://fir-trovami.firebaseio.com/groups/$grpkey/members/$i.json");
     Map result1 = jsonCodec.decode(response1.body);
     memberstoShowHomepage1.add(result1["name"]);
 
@@ -182,7 +183,7 @@ class groupstatusstate extends State<groupstatus>{
 
   @override
   Widget build(BuildContext context) {
-    children= new List.generate(memberstoShowHomepage1.length, (int i) => new memberlist(memberstoShowHomepage1[i]));
+    children= new List.generate(memberstoShowHomepage1.length, (int i) => new MemberList(memberstoShowHomepage1[i]));
     return new RefreshIndicator(
       key: _refreshIndicatorKey,
       onRefresh: getmembers1,
@@ -246,7 +247,7 @@ class groupstatusstate extends State<groupstatus>{
                         ),
                         new Expanded(child:new Container(
                             child: new Text(
-                              "Group Name: ${groupStatusGroupname}",
+                              "Group Name: $groupStatusGroupname",
                               style: new TextStyle(fontSize: 20.0,fontWeight: FontWeight.bold),
                             ),
                             padding: const EdgeInsets.only( left:20.0)
@@ -285,9 +286,9 @@ class groupstatusstate extends State<groupstatus>{
 }
 
 
-class memberlist extends StatelessWidget {
+class MemberList extends StatelessWidget {
     final String mem;
-    memberlist(this.mem);
+    MemberList(this.mem);
 
     @override
     Widget build(BuildContext context) =>
@@ -302,7 +303,7 @@ class memberlist extends StatelessWidget {
               ),
               new Container(child:
               new Text(
-                "${mem}",
+                "$mem",
                 style: new TextStyle(fontSize: 20.0),
               ),
                   padding: new EdgeInsets.only( left:20.0)

@@ -14,8 +14,8 @@ import 'signuppage.dart';
 
 var popflag=0;
 List<UserData> users=new List<UserData>();
-logindetails logindet = new logindetails();
-groupDetails grpd=new groupDetails();
+LoginDetails logindet = new LoginDetails();
+GroupDetails grpd=new GroupDetails();
 
 
 final ThemeData kIOSTheme = new ThemeData(
@@ -57,21 +57,21 @@ void main() {
             settings: settings,
           );
           case '/c': return defaultTargetPlatform == TargetPlatform.iOS
-              ? new CupertinoPageRoute(builder:  (_) => new addGroup(),settings: settings,)
+              ? new CupertinoPageRoute(builder:  (_) => new AddGroup(),settings: settings,)
               :new MyCustomRoute1(
-            builder: (_) => new addGroup(),
+            builder: (_) => new AddGroup(),
             settings: settings,
           );
           case '/d': return defaultTargetPlatform == TargetPlatform.iOS
-              ? new CupertinoPageRoute(builder:  (_) => new groupstatuslayout(),settings: settings,)
+              ? new CupertinoPageRoute(builder:  (_) => new GroupStatusLayout(),settings: settings,)
               :new MyCustomRoute1(
-            builder: (_) => new groupstatuslayout(),
+            builder: (_) => new GroupStatusLayout(),
             settings: settings,
           );
           case '/g': return defaultTargetPlatform == TargetPlatform.iOS
-              ? new CupertinoPageRoute(builder:  (_) => new loadingindlayout(),settings: settings,)
+              ? new CupertinoPageRoute(builder:  (_) => new LoadingIndLayout(),settings: settings,)
               :new MyCustomRoute1(
-            builder: (_) => new loadingindlayout(),
+            builder: (_) => new LoadingIndLayout(),
             settings: settings,
           );
         }
@@ -100,8 +100,7 @@ class MyCustomRoute1<T> extends MaterialPageRoute<T> {
   MyCustomRoute1({ WidgetBuilder builder, RouteSettings settings })
       : super(builder: builder, settings: settings);
 
-  @override
-  Widget TransitionBuilder(BuildContext context,
+  Widget transitionBuilder(BuildContext context,
       Animation<Offset> animation,
       Animation<double> secondaryAnimation,
       Widget child) {
@@ -113,40 +112,40 @@ class MyCustomRoute1<T> extends MaterialPageRoute<T> {
 
 
 class UserData {
-  UserData({this.EmailId,this.password,this.name,this.locationShare,this.groupsIamin,this.location});
-   String EmailId ;
+  UserData({this.emailId,this.password,this.name,this.locationShare,this.groupsIamin,this.location});
+   String emailId ;
    String password;
    String name;
    bool locationShare;
-  Map<String,double> location=null;
+  Map<String,double> location;
    List<String> groupsIamin=[];
 
 
   UserData.fromJson(Map value){
-    EmailId=value["emailid"];
+    emailId=value["emailid"];
     name=value["name"];
     locationShare=value["locationShare"];
     groupsIamin=value["groupsIamin"];
   }
    Map toJson(){
-     return {"name": name,"locationShare": locationShare,"groupsIamin":groupsIamin,"emailid":EmailId,"location":location};
+     return {"name": name,"locationShare": locationShare,"groupsIamin":groupsIamin,"emailid":emailId,"location":location};
    }
 }
 
-class logindetails {
-  logindetails({this.EmailId,this.password});
-  String EmailId = '';
+class LoginDetails {
+  LoginDetails({this.emailId,this.password});
+  String emailId = '';
   String password = '';
   //String name = '';
 }
 
 
-class groupDetails {
-  groupDetails({this.groupname,this.groupmembers});
+class GroupDetails {
+  GroupDetails({this.groupname,this.groupmembers});
   String groupname = "";
   List<UserData> groupmembers=[];
 
-  groupDetails.fromJson(Map value){
+  GroupDetails.fromJson(Map value){
     groupname=value["groupname"];
 //    print("value of members:${value["members"]}");
       groupmembers=value["members"];
@@ -159,17 +158,17 @@ class groupDetails {
 }
 
 
-class currentLoc{
-  String EmailId;
+class CurrentLoc{
+  String emailId;
   Map<String,double> currentLocation;
-  currentLoc({this.EmailId,this.currentLocation});
+  CurrentLoc({this.emailId,this.currentLocation});
 }
 
-class locationclass{
+class LocationClass{
   double latitude;
   double longitude;
 
-  locationclass({this.latitude, this.longitude});
+  LocationClass({this.latitude, this.longitude});
 
   Map toJson(){
     return {"latitude":latitude,"longitude":longitude};

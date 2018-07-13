@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 import 'package:flutter/rendering.dart';
 
 import 'InputTextField.dart';
@@ -10,9 +10,8 @@ import 'signinpage.dart';
 import 'functionsForFirebaseApiCalls.dart';
 
 
-var httpClient = createHttpClient();
-String _selectedChoice="";
-var Json = const JsonCodec();
+var httpClient = new Client();
+//UNUSED var Json = const JsonCodec();
 var groupName="";
 Color textFieldColor = const Color.fromRGBO(0, 0, 0, 0.2);
 const jsonCodec=const JsonCodec(reviver: _reviver);
@@ -39,21 +38,21 @@ ThemeData appTheme = new ThemeData(
   _reviver1(key,value) {
 
     if(key!=null&& value is Map && key.contains('-')){
-      return new groupDetails.fromJson(value);
+      return new GroupDetails.fromJson(value);
     }
     return value;
   }
 
-  class addGroup extends StatefulWidget {
+  class AddGroup extends StatefulWidget {
     @override
-    addGroupstate createState() => new addGroupstate();
+    AddGroupState createState() => new AddGroupState();
   }
 
-  class addGroupstate extends State<addGroup>{
+  class AddGroupState extends State<AddGroup>{
     final GlobalKey<ScaffoldState> _scaffoldKeySecondary1 = new GlobalKey<ScaffoldState>();
     final GlobalKey<FormState> _groupformKey = new GlobalKey<FormState>();
 
-    bool _autovalidate1 = false;
+//UNUSED     bool _autovalidate1 = false;
     List<UserData> userstoShowGrpDetailsPage=new List<UserData>();
     List<Widget> children1=new List<Widget>();
     List<UserData> members=[];
@@ -78,7 +77,7 @@ ThemeData appTheme = new ThemeData(
       final FormState form = _groupformKey.currentState;
       form.save();
       UserData loggedInMember = new UserData();
-      loggedInMember.EmailId = loggedinUser;
+      loggedInMember.emailId = loggedinUser;
       loggedInMember.locationShare = false;
       for (var i = 0; i < members.length; i++) {
         grpd.groupmembers.add(members[i]);
@@ -90,22 +89,22 @@ ThemeData appTheme = new ThemeData(
 
         final Map resstring = await getUsers();
         resstring.forEach((k, v) async {
-          if (v.EmailId == grpd.groupmembers[i].EmailId) {
+          if (v.emailId == grpd.groupmembers[i].emailId) {
             if (v.groupsIamin == null) {
               List<String> groupsIamin = [];
               groupsIamin.add(grpd.groupname);
               var groupsIaminjson = jsonCodec.encode(groupsIamin);
-              var response1 = await httpClient.put(
-                  'https://fir-trovami.firebaseio.com/users/${k}/groupsIamin.json?',
+            /*  var response1 = */await httpClient.put(
+                  'https://fir-trovami.firebaseio.com/users/$k/groupsIamin.json?',
                   body: groupsIaminjson);
             } else {
               var response2 = await httpClient.get(
-                  'https://fir-trovami.firebaseio.com/users/${k}/groupsIamin.json?');
+                  'https://fir-trovami.firebaseio.com/users/$k/groupsIamin.json?');
               List<String> resmap = jsonCodec.decode(response2.body);
               resmap.add(grpd.groupname);
               var groupsIaminjson = jsonCodec.encode(resmap);
-              var response1 = await httpClient.put(
-                  'https://fir-trovami.firebaseio.com/users/${k}/groupsIamin.json?',
+              /*var response1 = */await httpClient.put(
+                  'https://fir-trovami.firebaseio.com/users/$k/groupsIamin.json?',
                   body: groupsIaminjson);
             }
           }
@@ -120,7 +119,7 @@ ThemeData appTheme = new ThemeData(
     void _select(UserData user) {
       members.add(user);
       for(var i=0;i<userstoShowGrpDetailsPage.length;i++){
-        if(userstoShowGrpDetailsPage[i].EmailId==user.EmailId){
+        if(userstoShowGrpDetailsPage[i].emailId==user.emailId){
           userstoShowGrpDetailsPage.removeAt(i);
         }
       }
@@ -137,9 +136,9 @@ ThemeData appTheme = new ThemeData(
       resstring.forEach((k,v){
         UserData usertoshow=new UserData();
         usertoshow.name=v.name;
-        usertoshow.EmailId = v.EmailId;
+        usertoshow.emailId = v.emailId;
         usertoshow.locationShare=false;
-        if(usertoshow.EmailId==loggedinUser){
+        if(usertoshow.emailId==loggedinUser){
 
         }else {
           userstoShowGrpDetailsPage.add(usertoshow);
@@ -148,7 +147,7 @@ ThemeData appTheme = new ThemeData(
     }
 
     @override
-    void initState() => getusers();
+    void initState() {super.initState(); getusers();}
 
 
     @override
@@ -157,7 +156,7 @@ ThemeData appTheme = new ThemeData(
 
     if(members.isNotEmpty) {
       children1 =
-      new List.generate(count, (int i) => new memberlist(members[i].name));
+      new List.generate(count, (int i) => new MemberList(members[i].name));
     }
 
     return new Scaffold(
@@ -260,9 +259,9 @@ ThemeData appTheme = new ThemeData(
   }
 
 
-  class memberlist extends StatelessWidget {
+  class MemberList extends StatelessWidget {
         final String mem;
-        memberlist(this.mem);
+        MemberList(this.mem);
 
         @override
         Widget build(BuildContext context) =>
@@ -277,7 +276,7 @@ ThemeData appTheme = new ThemeData(
                   ),
                   new Container(child:
                   new Text(
-                      "${mem}",
+                      "$mem",
                       style: new TextStyle(fontSize: 20.0),
                   ),
                       padding: new EdgeInsets.only( left:20.0)

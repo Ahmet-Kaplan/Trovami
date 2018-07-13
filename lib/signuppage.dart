@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
@@ -13,7 +13,7 @@ import 'functionsForFirebaseApiCalls.dart';
 
 
 
-var httpClient = createHttpClient();
+var httpClient = new Client();
 bool userexists=false;
 UserData user1=new UserData();
 const jsonCodec=const JsonCodec(reviver: _reviver);
@@ -37,11 +37,11 @@ TextStyle textStyle = new TextStyle(
 
 class SignupLayout extends StatefulWidget {
   @override
-  signuplayoutstate createState() => new signuplayoutstate();
+  SignupLayoutState createState() => new SignupLayoutState();
 }
 
 
-class signuplayoutstate extends State<SignupLayout>{
+class SignupLayoutState extends State<SignupLayout>{
   @override
   Widget build(BuildContext context)=>
       defaultTargetPlatform == TargetPlatform.iOS
@@ -58,20 +58,20 @@ class signuplayoutstate extends State<SignupLayout>{
 
 class Signup extends StatefulWidget {
   @override
-  signupstate createState() => new signupstate();
+  SignupState createState() => new SignupState();
 }
 
-class signupstate extends State<Signup>{
+class SignupState extends State<Signup>{
 
   final GlobalKey<ScaffoldState> _scaffoldKeySecondary = new GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKeySeondary = new GlobalKey<FormState>();
   final GlobalKey<FormFieldState<String>> _passwordFieldKeySecondary = new GlobalKey<FormFieldState<String>>();
 
   bool _autovalidate1 = false;
-  bool _formWasEdited = false;
+//UNUSED  bool _formWasEdited = false;
 
   final IconData mail = const IconData(0xe158, fontFamily: 'MaterialIcons');
-  final IconData lock_outline = const IconData(
+  final IconData lockOutline = const IconData(
       0xe899, fontFamily: 'MaterialIcons');
   final IconData signupicon=const IconData(0xe316, fontFamily: 'MaterialIcons');
 
@@ -95,10 +95,10 @@ class signupstate extends State<Signup>{
       user1.groupsIamin=[];
       users.add(user1);
       var userjson= jsonCodec.encode(user1);
-      print("userjson:${userjson}");
+      print("userjson:$userjson");
       final Map usrmap=await getUsers();
       usrmap.forEach((k,v){
-        if(v.EmailId==user1.EmailId){
+        if(v.emailId==user1.emailId){
           userexists=true;
         }
       });
@@ -112,7 +112,7 @@ class signupstate extends State<Signup>{
   }
 
   String _validateName(String value) {
-    _formWasEdited = true;
+//UNUSED    _formWasEdited = true;
     if (value.isEmpty)
       return 'EmailID is required.';
     final RegExp nameExp = new RegExp(r'^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$');
@@ -123,7 +123,7 @@ class signupstate extends State<Signup>{
 
 
   String _validatePassword(String value) {
-    _formWasEdited = true;
+//UNUSED    _formWasEdited = true;
     final FormFieldState<String> passwordField1 = _passwordFieldKeySecondary.currentState;
     if (passwordField1.value == null || passwordField1.value.isEmpty)
       return 'Please choose a password.';
@@ -165,7 +165,7 @@ class signupstate extends State<Signup>{
                       hintText: 'EmailID',
                       labelText: 'EmailID',
                     ),
-                    onSaved: (String value) { user1.EmailId = value; },
+                    onSaved: (String value) { user1.emailId = value; },
                     validator: _validateName,
                   ),
                   padding: const EdgeInsets.only( bottom:15.0, top:0.0,right: 20.0 ),
@@ -179,7 +179,7 @@ class signupstate extends State<Signup>{
                     decoration: new InputDecoration(
                       hintText: 'Type your password here',
                       labelText: 'Password *',
-                      icon: new Icon(lock_outline),
+                      icon: new Icon(lockOutline),
                     ),
                     obscureText: true,
                     onSaved: (String value) { user1.password=value;
@@ -195,7 +195,7 @@ class signupstate extends State<Signup>{
                     decoration: new InputDecoration(
                       hintText: 'Repeat Password',
                       labelText: 'Retype-Password *',
-                      icon: new Icon(lock_outline),
+                      icon: new Icon(lockOutline),
                     ),
                     obscureText: true,
                     validator: _validatePassword,

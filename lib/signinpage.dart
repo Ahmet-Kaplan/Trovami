@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_test/flutter_test.dart';
+//UNUSED import 'package:flutter_test/flutter_test.dart';
 
 import 'InputTextField.dart';
 import 'Roundedbutton.dart';
 import 'main.dart';
 import 'signuppage.dart';
-import 'homepage.dart';
+//UNUSED import 'homepage.dart';
 import 'functionsForFirebaseApiCalls.dart';
 
 final googleSignIn = new GoogleSignIn();
@@ -32,26 +32,26 @@ ScrollController scrollController = new ScrollController();
 class SignInForm extends StatefulWidget {
 
   @override
-  signinformstate createState() => new signinformstate();
+  SigninFormState createState() => new SigninFormState();
 }
 
 
 
 // ignore: mixin_inherits_from_not_object
-class signinformstate extends State<SignInForm> with SingleTickerProviderStateMixin{
+class SigninFormState extends State<SignInForm> with SingleTickerProviderStateMixin{
 
   bool _isgooglesigincomplete=true;
-  bool _first=true;
-  var httpClient = createHttpClient();
+//UNUSED  bool _first=true;
+  var httpClient = new Client();
 
   final IconData mail = const IconData(0xe158, fontFamily: 'MaterialIcons');
-  final IconData lock_outline = const IconData(0xe899, fontFamily: 'MaterialIcons');
+  final IconData lockOutline = const IconData(0xe899, fontFamily: 'MaterialIcons');
   final IconData signinicon=const IconData(0xe315, fontFamily: 'MaterialIcons');
   final IconData signupicon=const IconData(0xe316, fontFamily: 'MaterialIcons');
   bool _autovalidate = false;
-  bool _formWasEdited = false;
+//UNUSED  bool _formWasEdited = false;
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  final GlobalKey<FormFieldState<String>> _passwordFieldKey = new GlobalKey<FormFieldState<String>>();
+//UNUSED  final GlobalKey<FormFieldState<String>> _passwordFieldKey = new GlobalKey<FormFieldState<String>>();
   Animation<Color> animation;
   AnimationController controller;
 
@@ -83,13 +83,13 @@ class signinformstate extends State<SignInForm> with SingleTickerProviderStateMi
     await _ensureLoggedIn();
     GoogleSignInAccount user = googleSignIn.currentUser;
     UserData guser=new UserData();
-    guser.EmailId=user.email;
+    guser.emailId=user.email;
     guser.name=user.displayName;
     guser.locationShare=false;
     final String guserjson=jsonCodec.encode(guser);
     final Map usrmap=await getUsers();
     usrmap.forEach((k,v){
-      if(v.EmailId==user.email){
+      if(v.emailId==user.email){
         userexists=true;
         loggedinUser=user.email;
         loggedInUsername=user.displayName;
@@ -117,8 +117,8 @@ class signinformstate extends State<SignInForm> with SingleTickerProviderStateMi
       final Map usrmap=await getUsers();
       usrmap.forEach(
         (k,v) async {
-          if(logindet.EmailId==v.EmailId){
-            loggedinUser=logindet.EmailId;
+          if(logindet.emailId==v.emailId){
+            loggedinUser=logindet.emailId;
             loggedInUsername=v.name;
             await Navigator.of(context).pushReplacementNamed('/b');
           }
@@ -130,7 +130,7 @@ class signinformstate extends State<SignInForm> with SingleTickerProviderStateMi
   }
 
   String _validateName(String value) {
-    _formWasEdited = true;
+//UNUSED    _formWasEdited = true;
     if (value.isEmpty)
       return 'EmailID is required.';
     final  nameExp = new RegExp(r'^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$');
@@ -139,7 +139,7 @@ class signinformstate extends State<SignInForm> with SingleTickerProviderStateMi
     return null;
   }
 
-  String _validatePassword(String value) {
+/*UNUSED  String _validatePassword(String value) {
     _formWasEdited = true;
     final FormFieldState<String> passwordField = _passwordFieldKey.currentState;
     if (passwordField.value == null || passwordField.value.isEmpty)
@@ -148,10 +148,11 @@ class signinformstate extends State<SignInForm> with SingleTickerProviderStateMi
       return 'Passwords don\'t match';
     return null;
   }
-
+*/
 
   @override
   void initState() {
+    super.initState();
     controller = new AnimationController(
         duration: const Duration(seconds: 10), vsync: this);
     animation = new ColorTween(begin: Colors.red, end: Colors.blue).animate(controller)
@@ -221,7 +222,7 @@ class signinformstate extends State<SignInForm> with SingleTickerProviderStateMi
                             bottomMargin: 20.0,
                             validateFunction: _validateName,
                             onSaved: (String email) {
-                              logindet.EmailId = email;
+                              logindet.emailId = email;
                             }
                           ),
                         ),

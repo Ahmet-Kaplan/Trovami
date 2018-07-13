@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 import 'package:map_view/camera_position.dart';
 import 'package:map_view/location.dart';
 import 'package:map_view/map_options.dart';
@@ -13,7 +13,7 @@ import 'package:map_view/marker.dart';
 import 'package:map_view/toolbar_action.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-import 'groupstatus.dart';
+import 'GroupStatus.dart';
 import 'homepage.dart';
 import 'main.dart';
 import 'signinpage.dart';
@@ -25,15 +25,15 @@ int nouserflag;
 var twenty;
 var sec = const Duration(seconds: 1);
 Timer t2;
-var httpClient = createHttpClient();
+var httpClient = new Client();
 
 
-  class loadingindlayout extends StatefulWidget {
+  class LoadingIndLayout extends StatefulWidget {
     @override
-    loadingindlayoutstate createState() => new loadingindlayoutstate();
+    LoadingIndLayoutState createState() => new LoadingIndLayoutState();
   }
 
-class loadingindlayoutstate extends State<loadingindlayout> {
+class LoadingIndLayoutState extends State<LoadingIndLayout> {
       MapView mapView = new MapView();
       CameraPosition cameraPosition;
       var compositeSubscription = new CompositeSubscription();
@@ -82,7 +82,7 @@ class loadingindlayoutstate extends State<loadingindlayout> {
       );
 
       getlocsofmembers(var flag) async {
-        var httpClient = createHttpClient();
+        var httpClient = new Client();
         String groupkey;
         int memcount = 0;
         String userlockey;
@@ -94,30 +94,30 @@ class loadingindlayoutstate extends State<loadingindlayout> {
           groupresmap.forEach((k, v) {
             if (v.groupname == groupStatusGroupname) {
               memcount = v.groupmembers.length;
-              print("groupstatusgroupname:${groupStatusGroupname}");
+              print("groupstatusgroupname:$groupStatusGroupname");
               groupkey = k;
             }
           });
           for (var i = 0; i < memcount; i++) {
             var response1 = await httpClient.get(
-                "https://fir-trovami.firebaseio.com/groups/${groupkey}/members/${i}.json");
+                "https://fir-trovami.firebaseio.com/groups/$groupkey/members/$i.json");
             Map result1 = jsonCodec.decode(response1.body);
             print(result1["emailid"]);
             print(result1["locationShare"]);
             if (result1["locationShare"] == true) {
               resstring.forEach((k, v) {
-                if (v.EmailId == result1["emailid"]) {
+                if (v.emailId == result1["emailid"]) {
                   userlockey = k;
                 }
               });
               var flag = 0;
               var userlocresponse = await httpClient.get(
-                  "https://fir-trovami.firebaseio.com/users/${userlockey}/location.json");
+                  "https://fir-trovami.firebaseio.com/users/$userlockey/location.json");
               final Map resmap1 = jsonCodec.decode(userlocresponse.body);
               for (var i = 0; i < currentLocations.length; i++) {
-                if (currentLocations[i].EmailId == result1["emailid"]) {
-                  currentLoc currentLocation = new currentLoc();
-                  currentLocation.EmailId = result1["emailid"];
+                if (currentLocations[i].emailId == result1["emailid"]) {
+                  CurrentLoc currentLocation = new CurrentLoc();
+                  currentLocation.emailId = result1["emailid"];
                   currentLocation.currentLocation = resmap1;
                   currentLocations.removeAt(i);
                   currentLocations.add(currentLocation);
@@ -125,14 +125,14 @@ class loadingindlayoutstate extends State<loadingindlayout> {
                 }
               }
               if (flag == 0) {
-                currentLoc currentLocation = new currentLoc();
-                currentLocation.EmailId = result1["emailid"];
+                CurrentLoc currentLocation = new CurrentLoc();
+                currentLocation.emailId = result1["emailid"];
                 currentLocation.currentLocation = resmap1;
                 currentLocations.add(currentLocation);
               }
             } else {
               for (var i = 0; i < currentLocations.length; i++) {
-                if (currentLocations[i].EmailId == result1["emailid"]) {
+                if (currentLocations[i].emailId == result1["emailid"]) {
                   currentLocations.removeAt(i);
                 }
               }
@@ -151,10 +151,10 @@ class loadingindlayoutstate extends State<loadingindlayout> {
                         var flag = 0;
                         if (currentLocations.isNotEmpty) {
                           for (var i = 0; i < currentLocations.length; i++) {
-                            if (currentLocations[i].EmailId ==
+                            if (currentLocations[i].emailId ==
                                 event.snapshot.value["emailid"]) {
-                              currentLoc currentLocation = new currentLoc();
-                              currentLocation.EmailId = event.snapshot.value["emailid"];
+                              CurrentLoc currentLocation = new CurrentLoc();
+                              currentLocation.emailId = event.snapshot.value["emailid"];
                               currentLocation.currentLocation =
                               event.snapshot.value["location"];
                               currentLocations.removeAt(i);
@@ -163,8 +163,8 @@ class loadingindlayoutstate extends State<loadingindlayout> {
                             }
                           }
                           if (flag == 0) {
-                            currentLoc currentLocation = new currentLoc();
-                            currentLocation.EmailId = event.snapshot.value["emailid"];
+                            CurrentLoc currentLocation = new CurrentLoc();
+                            currentLocation.emailId = event.snapshot.value["emailid"];
                             currentLocation.currentLocation =
                             event.snapshot.value["location"];
                             currentLocations.add(currentLocation);
@@ -175,13 +175,13 @@ class loadingindlayoutstate extends State<loadingindlayout> {
 //                          new Timer(twenty, () {
                             if(currentLocations.length!=0) {
                               for (var i = 0; i < currentLocations.length; i++) {
-                                if(currentLocations[i].currentLocation!=null&&currentLocations[i].EmailId!=loggedinUser &&currentLocations[i].EmailId==event.snapshot.value["emailid"])
+                                if(currentLocations[i].currentLocation!=null&&currentLocations[i].emailId!=loggedinUser &&currentLocations[i].emailId==event.snapshot.value["emailid"])
                                 {
-                                  mapView.removeMarker(new Marker("${currentLocations[i].EmailId}", "${currentLocations[i].EmailId}",
+                                  mapView.removeMarker(new Marker("${currentLocations[i].emailId}", "${currentLocations[i].emailId}",
                                       currentLocations[i].currentLocation["latitude"],
                                       currentLocations[i].currentLocation["longitude"],
                                       color: Colors.redAccent));
-                                  mapView.addMarker(new Marker("${currentLocations[i].EmailId}", "${currentLocations[i].EmailId}",
+                                  mapView.addMarker(new Marker("${currentLocations[i].emailId}", "${currentLocations[i].emailId}",
                                       currentLocations[i].currentLocation["latitude"],
                                       currentLocations[i].currentLocation["longitude"],
                                       color: Colors.redAccent));
@@ -195,7 +195,7 @@ class loadingindlayoutstate extends State<loadingindlayout> {
                         }
                       } else {}
                     }
-                  };
+                  }
                 }
                 );
               });
@@ -204,7 +204,7 @@ class loadingindlayoutstate extends State<loadingindlayout> {
         }
       }
 
-      showMap(List<currentLoc> currentLocations) {
+      showMap(List<CurrentLoc> currentLocations) {
         double lat;
         double long;
         if (currentLocations.length!=0&& currentLocations[0].currentLocation!=null) {
@@ -226,8 +226,8 @@ class loadingindlayoutstate extends State<loadingindlayout> {
         var sub1 = mapView.onMapReady.listen((_) async {
           if(currentLocations.isNotEmpty) {
             for (var i = 0; i < currentLocations.length; i++) {
-              if(currentLocations[i].currentLocation!=null&&currentLocations[i].EmailId!=loggedinUser) {
-                    mapView.addMarker(new Marker("${currentLocations[i].EmailId}", "${currentLocations[i].EmailId}",
+              if(currentLocations[i].currentLocation!=null&&currentLocations[i].emailId!=loggedinUser) {
+                    mapView.addMarker(new Marker("${currentLocations[i].emailId}", "${currentLocations[i].emailId}",
                     currentLocations[i].currentLocation["latitude"],
                     currentLocations[i].currentLocation["longitude"],
                     color: Colors.redAccent));
@@ -315,9 +315,9 @@ class loadingindlayoutstate extends State<loadingindlayout> {
 
 
   updateLocation(location) async{
-    var httpClient = createHttpClient();
+    var httpClient = new Client();
     bool locationflag = true;
-    locationclass loc = new locationclass();
+    LocationClass loc = new LocationClass();
     loc.latitude = location.latitude;
     loc.longitude = location.longitude;
     int decimals = 5;
@@ -334,16 +334,16 @@ class loadingindlayoutstate extends State<loadingindlayout> {
           if (v["name"] == loggedInUsername && v["locationShare"] == true) {
             locationflag = false;
           }
-        };
+        }
       }
       );
     });
     if (locationflag == false) {
       final Map resstring = await getUsers();
       resstring.forEach((k, v) async {
-        if (v.EmailId == loggedinUser) {
+        if (v.emailId == loggedinUser) {
          await httpClient.put(
-          'https://fir-trovami.firebaseio.com/users/${k}/location.json?',
+          'https://fir-trovami.firebaseio.com/users/$k/location.json?',
           body: result2);
         }
       });

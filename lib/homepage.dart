@@ -1,68 +1,54 @@
-import 'dart:async';
+//UNUSED import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
-import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 
-
-
-
-
-import 'groupdetails.dart';
+//UNUSED import 'groupdetails.dart';
 import 'main.dart';
 import 'signinpage.dart';
-import 'functionsForFirebaseApiCalls.dart';
+//UNUSED import 'functionsForFirebaseApiCalls.dart';
 
-var temp=[];
-String pageName='';
-var groupStatusGroupname='';
-double animValue=0.0;
-List<UserData> membersToShow=new List<UserData>();
-List<String> groupNamesToShow=new List<String>();
-List<groupDetails> groupsToShow=new List<groupDetails>();
-groupDetails grps=new groupDetails();
-const jsonCodec2=const JsonCodec();
-List<UserData> membersToShowHomepage=new List<UserData>();
+var temp = [];
+String pageName = '';
+var groupStatusGroupname = '';
+double animValue = 0.0;
+List<UserData> membersToShow = new List<UserData>();
+List<String> groupNamesToShow = new List<String>();
+List<GroupDetails> groupsToShow = new List<GroupDetails>();
+GroupDetails grps = new GroupDetails();
+const jsonCodec2 = const JsonCodec();
+List<UserData> membersToShowHomepage = new List<UserData>();
 final groupref = FirebaseDatabase.instance.reference().child('groups');
 final usrref = FirebaseDatabase.instance.reference().child('users');
-var _httpClient = createHttpClient();
-const _jsonCodec=const JsonCodec(reviver: _reviver);
+var _httpClient = new Client();
+const _jsonCodec = const JsonCodec(reviver: _reviver);
 var reference;
 
+//UNUSED bool _first=true;
 
-
-bool _first=true;
-
-_reviver( key, value) {
-  if(key!=null&& value is Map && key.contains('-')){
+_reviver(key, value) {
+  if (key != null && value is Map && key.contains('-')) {
     return new UserData.fromJson(value);
   }
   return value;
 }
 
+class Homepagelayout extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final Size screenSize = MediaQuery.of(context).size;
 
-
-
-  class Homepagelayout extends StatelessWidget {
-
-    @override
-    Widget build(BuildContext context) {
-
-      final Size screenSize = MediaQuery
-          .of(context)
-          .size;
-
-      return
-        new Scaffold(
-          body: new Container(
-            child: new Homepage(),
-            width: screenSize.width,
-            height: screenSize.height,
-          ),
-        );
+    return new Scaffold(
+      body: new Container(
+        child: new Homepage(),
+        width: screenSize.width,
+        height: screenSize.height,
+      ),
+    );
 //        new Scaffold(
 //          body: new Center(
 //            child: new Container(
@@ -73,90 +59,83 @@ _reviver( key, value) {
 //            ),
 //          ),
 //        )
-    }
-
-
   }
+}
 
-class groupBox extends StatelessWidget {
-  groupBox({
-    this.snapshot, this.animation,this.index
-  });
+class GroupBox extends StatelessWidget {
+  GroupBox({this.snapshot, this.animation, this.index});
   final DataSnapshot snapshot;
   final Animation animation;
   final int index;
-
-
 
   @override
   Widget build(BuildContext context) {
     print(snapshot.value);
     return new SizeTransition(
-      sizeFactor: new CurvedAnimation(
-          parent: animation, curve: Curves.easeOut),
+      sizeFactor: new CurvedAnimation(parent: animation, curve: Curves.easeOut),
       axisAlignment: 0.0,
       child: new Container(
         margin: const EdgeInsets.symmetric(vertical: 10.0),
         child: new Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-        new Container(
-        margin: const EdgeInsets.only(right: 16.0,bottom: 16.0),
-        child: new CircleAvatar(child: new IconButton(
-            icon: new Icon(Icons.group), onPressed: null),
-          backgroundColor: const Color.fromRGBO(0, 0, 0, 0.2),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            new Container(
+              margin: const EdgeInsets.only(right: 16.0, bottom: 16.0),
+              child: new CircleAvatar(
+                child: new IconButton(
+                    icon: new Icon(Icons.group), onPressed: null),
+                backgroundColor: const Color.fromRGBO(0, 0, 0, 0.2),
+              ),
+            ),
+            new FlatButton(
+                onPressed: () {
+                  groupStatusGroupname = snapshot.value;
+                  Navigator.of(context).pushNamed('/d');
+                },
+                child: new Text(
+                  snapshot.value,
+                ))
+          ],
         ),
-      ),
-          new FlatButton(onPressed: () {
-           groupStatusGroupname = snapshot.value;
-           Navigator.of(context).pushNamed('/d');
-         }, child: new Text(
-            snapshot.value,))
-        ],
-      ),
         decoration: new BoxDecoration(
           border: new Border(
-            bottom: new BorderSide(width: 1.0, color: const Color.fromRGBO(0, 0, 0, 0.2)),
+            bottom: new BorderSide(
+                width: 1.0, color: const Color.fromRGBO(0, 0, 0, 0.2)),
           ),
         ),
-    ),
-
+      ),
     );
   }
 }
 
+class Homepage extends StatefulWidget {
+  @override
+  HomePageState createState() => new HomePageState();
+}
 
+class HomePageState extends State<Homepage> with TickerProviderStateMixin {
+//UNUSED    final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
+  List<Widget> homechildren = new List<Widget>();
 
-
-
-  class Homepage extends StatefulWidget{
-    @override
-    homepagestate createState() => new homepagestate();
-  }
-
-  class homepagestate extends State<Homepage> with TickerProviderStateMixin {
-    final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-    new GlobalKey<RefreshIndicatorState>();
-    List<Widget> homechildren=new List<Widget>();
-
-
-    getgroups() {
-  //loggedinuser="m@g.com";
-  //loggedinusername="man";
-      groupsToShow=new List<groupDetails>();
-      String userkey;
+  getgroups() {
+    //loggedinuser="m@g.com";
+    //loggedinusername="man";
+    groupsToShow = new List<GroupDetails>();
+    String userkey;
 //       _refreshIndicatorKey.currentState?.show();
-       _httpClient.get('https://fir-trovami.firebaseio.com/users.json').then((response){
-        Map resstring=_jsonCodec.decode(response.body);
-        resstring.forEach((k,v){
-          if(v.EmailId==loggedinUser) {
-            userkey=k;
-          }
-        });
-        setState(() {
-          reference = usrref.child(userkey).child("groupsIamin");
-        });
+    _httpClient
+        .get('https://fir-trovami.firebaseio.com/users.json')
+        .then((response) {
+      Map resstring = _jsonCodec.decode(response.body);
+      resstring.forEach((k, v) {
+        if (v.emailId == loggedinUser) {
+          userkey = k;
+        }
       });
+      setState(() {
+        reference = usrref.child(userkey).child("groupsIamin");
+      });
+    });
 
 //      var response2 = await httpClient.get(
 //          'https://fir-trovami.firebaseio.com/users/${userkey}/groupsIamin.json?');
@@ -167,39 +146,41 @@ class groupBox extends StatelessWidget {
 ////        groupsToShow = groupsToShow;
 //        _first=true;
 //      });
-    }
+  }
 
-    @override
-    void initState() => getgroups();
+  @override
+  void initState() {
+    super.initState();
+    getgroups();
+  }
 
-
-
-
-    @override
-    Widget build(BuildContext context) {
-      if(groupNamesToShow!=null) {
+  @override
+  Widget build(BuildContext context) {
+    if (groupNamesToShow != null) {
 //        homechildren =
 //        new List.generate(groupNamesToShow.length, (int i) => new homechildrenlist(
 //            groupNamesToShow[i]));
-      }else homechildren=new List<Widget>();
+    } else
+      homechildren = new List<Widget>();
 
-      return new Scaffold(
+    return new Scaffold(
         appBar: new AppBar(
-        leading: new Container(),
-        actions: <Widget>[
-          new IconButton(
-            icon: new Icon(Icons.group_add), onPressed: ()=>    Navigator.of(context).pushNamed('/c')
-            ,iconSize: 42.0,
-          ),
-          new IconButton(
-            icon: new Icon(Icons.person), onPressed:
-              (){
-              //TODO
-                Animation<double> alpha;
+          leading: new Container(),
+          actions: <Widget>[
+            new IconButton(
+              icon: new Icon(Icons.group_add),
+              onPressed: () => Navigator.of(context).pushNamed('/c'),
+              iconSize: 42.0,
+            ),
+            new IconButton(
+              icon: new Icon(Icons.person),
+              onPressed: () {
+                //TODO
+//UNUSED                Animation<double> alpha;
 
                 final AnimationController controller = new AnimationController(
                     duration: const Duration(milliseconds: 500), vsync: this);
-                alpha = new Tween(begin: 0.0, end: 255.0).animate(controller)
+/*UNUSED               alpha = new Tween(begin: 0.0, end: 255.0).animate(controller)
                   ..addListener(() {
 //                    _scaffoldkeyhomepage.currentState.setState(() {
 //                      _first=false;
@@ -210,37 +191,37 @@ class groupBox extends StatelessWidget {
 //
 //                    });
                   });
+*/
                 controller.forward();
               },
-            iconSize: 35.0,),
-        ],
+              iconSize: 35.0,
+            ),
+          ],
           title: new Text('Groups'),
         ),
         body: new Column(children: <Widget>[
-        new Flexible(
-        child:
-        ((reference!=null)?
-        new FirebaseAnimatedList(                            //new
-          query: reference,                                       //new
-          sort: (a, b) => b.key.compareTo(a.key),                 //new
-          padding: new EdgeInsets.all(8.0),                       //new
-          reverse: false,                                          //new
-          itemBuilder: (_, DataSnapshot snapshot, Animation<double> animation,index) {
-            return new groupBox(
-                snapshot: snapshot,
-                animation: animation,
-              index: index,
-            );
-          },
-
-        ):
-        new Container()),                                                        //new
-      ),
-      ])
-      );
-    }
+          new Flexible(
+            child: ((reference != null)
+                ? new FirebaseAnimatedList(
+                    //new
+                    query: reference, //new
+                    sort: (a, b) => b.key.compareTo(a.key), //new
+                    padding: new EdgeInsets.all(8.0), //new
+                    reverse: false, //new
+                    itemBuilder: (_, DataSnapshot snapshot,
+                        Animation<double> animation, index) {
+                      return new GroupBox(
+                        snapshot: snapshot,
+                        animation: animation,
+                        index: index,
+                      );
+                    },
+                  )
+                : new Container()), //new
+          ),
+        ]));
   }
-
+}
 
 //  class homechildrenlist extends StatelessWidget {
 //    String groupname;

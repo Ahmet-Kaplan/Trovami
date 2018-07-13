@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
 class RoundedButton extends StatelessWidget {
-  String buttonName;
+  final String buttonName;
   final VoidCallback onTap;
 
-  double height;
-  double width;
-  double bottomMargin;
-  double borderWidth;
-  Color buttonColor;
-  Color splashcolor;
-  Color highlightColor;
+  final double height;
+  final double width;
+  final double bottomMargin;
+  final double borderWidth;
+  final Color buttonColor;
+  final Color splashcolor;
+  final Color highlightColor;
 
-  TextStyle textStyle = new TextStyle(
+  final TextStyle textStyle = new TextStyle(
       color: new Color.fromRGBO(255, 255, 255, 0.4),
       fontSize: 16.0,
       fontWeight: FontWeight.bold);
